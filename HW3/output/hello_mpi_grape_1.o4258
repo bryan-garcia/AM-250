@@ -1,0 +1,6 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+ Hello world from processor            0  out of            4
+ Hello world from processor            1  out of            4
+ Hello world from processor            2  out of            4
+ Hello world from processor            3  out of            4

@@ -6,9 +6,11 @@ program trapezoidal_integration
 !	Trapezoidal rule.
 implicit none
 integer :: N, i
-real :: a, b
+real :: a, b, pi
 real :: dx, sum = 0.0
 real, external :: f
+
+pi = acos( -1.0 )
 
 write (*,*) "------------------------------------"
 write (*,*) "Trapezoidal Integration"
@@ -19,6 +21,8 @@ write (*,*) "Enter the LOWER bounds of integration for f(x): "
 read (*,*) a
 write (*,*) "Enter the UPPER bounds of integration for f(x): "
 read (*,*) b
+
+! read (*,*) b
 
 if (a > b) then
     stop "LOWER bound value greater than UPPER bound value."

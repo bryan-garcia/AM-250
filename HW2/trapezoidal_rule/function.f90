@@ -1,5 +1,8 @@
 FUNCTION f(x)
     IMPLICIT NONE
     REAL :: x, f
-    f = SIN( x ) + EXP( COS( x * SIN( X ) ) )
+    
+    f = x ** 2
+    ! f = SIN(X)
+
 END FUNCTION f

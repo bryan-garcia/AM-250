@@ -1,0 +1,7 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+ Hello World from thread =            0
+ Number of threads =            4
+ Hello World from thread =            2
+ Hello World from thread =            1
+ Hello World from thread =            3

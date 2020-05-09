@@ -1,0 +1,11 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+ Processor            1  got       157292  hits in the circle!
+ Processor            2  got       157266  hits in the circle!
+ Processor            3  got       157031  hits in the circle!
+ Processor            4  got       157311  hits in the circle!
+ Processor            5  got       157265  hits in the circle!
+ Processor            0  got       157280  hits in the circle!
+ Processor            7  got       156794  hits in the circle!
+ Approximation of Pi:    3.1434550    
+ Processor            6  got       157143  hits in the circle!
