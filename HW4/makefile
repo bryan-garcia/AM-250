@@ -2,6 +2,11 @@ make_options = -s
 current_dir = $(notdir $(shell pwd))
 
 all:
+	${MAKE} ${make_options} hello
+	${MAKE} ${make_options} ssr
+	${MAKE} ${make_options} ping
+	${MAKE} ${make_options} pi
+	${MAKE} ${make_options} ring
 
 hello: hello_mpi
 	${MAKE} ${make_options} -C jobs hello
@@ -37,7 +42,7 @@ ping_clean:
 	${MAKE} -C error ping_clean
 
 ring: ring_mpi
-	ssh compute-0-19
+	echo "ring_mpi: Due to the nature of my task, please execute me interactively!"
 
 ring_mpi:
 	mpif90 -o ring_mpi ring_mpi.f90
