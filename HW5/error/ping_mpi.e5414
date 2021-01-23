@@ -1,0 +1,20 @@
+At line 168 of file ping_mpi.f90
+Fortran runtime error: Attempt to DEALLOCATE unallocated 'time_dat'
+At line 168 of file ping_mpi.f90
+Fortran runtime error: Attempt to DEALLOCATE unallocated 'time_dat'
+--------------------------------------------------------------------------
+mpirun has exited due to process rank 1 with PID 27790 on
+node compute-0-19.local exiting improperly. There are two reasons this could occur:
+
+1. this process did not call "init" before exiting, but others in
+the job did. This can cause a job to hang indefinitely while it waits
+for all processes to call "init". By rule, if one process calls "init",
+then ALL processes must call "init" prior to termination.
+
+2. this process called "init", but exited without calling "finalize".
+By rule, all processes that call "init" MUST call "finalize" prior to
+exiting or it will be considered an "abnormal termination"
+
+This may have caused other processes in the application to be
+terminated by signals sent by mpirun (as reported here).
+--------------------------------------------------------------------------
