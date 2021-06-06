@@ -129,8 +129,8 @@ call initialize_grid_mpi(local_grid, pid_buffer, config)
 
 ! Print out the initial state (all processors)
 
-print *, "# Iteration ", 0
-call print_grid(local_grid, alive_icon, dead_icon, pid_buffer(1), show_ghosts)
+call global_print_grid(pid, local_grid, &
+col_height + 2, row_width + 2, alive_icon, dead_icon)
 
 do steps = 1, 80
 
@@ -138,9 +138,10 @@ do steps = 1, 80
     call update_grid(local_grid, pid_buffer)
 
     ! Print out the updated state if step is a multiple of 20 (per project requirements).
-    if (mod(steps, 20) .eq. 0) then
-        print *, "# Iteration ", steps
-        call print_grid(local_grid, alive_icon, dead_icon, pid_buffer(1), show_ghosts)
+    if (mod(steps, 2) .eq. 0) then
+        !call print_grid(local_grid, alive_icon, dead_icon, pid_buffer(1), show_ghosts)
+        call global_print_grid(pid, local_grid, &
+             col_height + 2, row_width + 2, alive_icon, dead_icon)
     end if
 
 end do

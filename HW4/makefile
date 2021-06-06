@@ -20,7 +20,7 @@ hello_clean:
 	${MAKE} -C error hello_clean
 
 ssr: ssr_mpi
-	${MAKE} ${make_options} -C jobs ssr
+	sbatch jobs/ssr_mpi.cmd
 
 ssr_mpi:
 	mpif90 -o ssr_mpi ssr_mpi.f90

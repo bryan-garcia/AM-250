@@ -1,12 +1,11 @@
-#PBS -S /bin/tcsh
-#PBS -q newest
-#PBS -N gol_mpi
-#PBS -o output
-#PBS -e error
-#PBS -l nodes=1:ppn=4
-#PBS -l walltime=00:01:00
+#!/bin/bash
 
-cd $PBS_O_WORKDIR
-make clean
-make gol
+#SBATCH -p 128x24
+#SBATCH -J gol_slurm
+#SBATCH -e error/gol_slurm_%j.err
+#SBATCH -o output/gol_slurm_%j.out
+#SBATCH --nodes 1
+#SBATCH --ntasks-per-node 4
+#SBATCH -t 00:01:00
+
 mpirun -np 4 gol_mpi

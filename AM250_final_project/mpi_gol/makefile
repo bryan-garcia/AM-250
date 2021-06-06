@@ -2,8 +2,8 @@ CC=mpif90
 
 all:
 
-batch:
-	qsub jobs/gol_mpi.cmd
+batch: gol
+	sbatch jobs/gol_mpi.cmd
 
 gol: gol_helper.o gol_mpi.o
 	${CC} -o gol_mpi gol_helper.o gol_mpi.o

@@ -7,6 +7,7 @@ program ssr_mpi
 !
 !----------------------------------------------------------------------
 use mpi
+use, intrinsic :: ISO_C_BINDING
 implicit none
 
 ! MPI related constants.
@@ -16,14 +17,19 @@ integer ierr, pid, numprocs, stat(mpi_status_size)
 integer sid, rid
 
 ! Real array of data to send
-real, dimension(5) :: rarr
-integer i, dim
+real, dimension(5, 5), target :: rarr
+real, pointer :: reshaped_arr(:)
+
+integer i, xdim, ydim
+INTEGER, DIMENSION(1) :: buff_len
 
 sid = 1
 rid = 2
-dim = 5
+xdim = 5
+ydim = 5
+buff_len(1) = xdim * ydim
 
-rarr = (/1.0, 2.0, 3.0, 4.0, 5.0/)
+call RANDOM_NUMBER(rarr)
 
 ! Get MPI up and running.
 call mpi_init(ierr)
@@ -33,22 +39,27 @@ call mpi_comm_size(mpi_comm_world, numprocs, ierr)
 ! If designated send ID...
 if (pid .eq. sid) then
     print *, "Sending modified array data from processor ", sid, " to processor ", rid
-    do i = 1, dim 
-        rarr(i) = 2.0 * rarr(i)
-    end do
+    rarr = 2.0 * rarr
 
-    print *, "Here's what I'm sending: ", rarr(:)
-    call mpi_send(rarr, dim, mpi_real, rid, 123, mpi_comm_world, ierr)
+    call C_F_POINTER (C_LOC(rarr), reshaped_arr, buff_len)
+
+    call mpi_send(rarr, xdim * ydim, mpi_real, rid, 123, mpi_comm_world, ierr)
 end if
 
 ! If designated receive ID...
 if (pid .eq. rid) then
     print *, "Receiving modified array data from processor ", sid
-    print *, "First, check out my buffer:", rarr(:)
+    print *, "First, check out my buffer:"
+    do i = 1, xdim
+        print *, rarr(:, i)
+    end do
 
-    call mpi_recv(rarr, dim, mpi_real, sid, 123, mpi_comm_world, stat, ierr)
+    call mpi_recv(rarr, xdim * ydim, mpi_real, sid, 123, mpi_comm_world, stat, ierr)
 
-    print *, "Now I have:", rarr(:)
+    print *, "Now I have:"
+    do i = 1, xdim
+        print *, rarr(:, i)
+    end do
 end if
 
 ! End MPI usage.

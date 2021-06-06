@@ -15,7 +15,7 @@ contains
     !
     ! -----------------------------------------------------------------
         implicit none
-        integer :: i, j, seed_1, seed_2, rval, ndim
+        integer :: i, j, rval, ndim
         integer, allocatable :: arr(:,:)
 
             allocate( arr(ndim, ndim) )

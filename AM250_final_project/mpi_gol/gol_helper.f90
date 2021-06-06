@@ -10,8 +10,11 @@ module gol_helper
 !
 !------------------------------------------------------------------------------
 use mpi
-contains 
+use, intrinsic :: ISO_C_BINDING
 
+INTEGER :: GNUM_PROCS
+
+contains 
 subroutine calculate_workload(height, width, work_buffer, num_procs)
 !------------------------------------------------------------------------------
 !   calculate_workload
@@ -61,6 +64,8 @@ subroutine calculate_workload(height, width, work_buffer, num_procs)
         ! While all others get an equal number
         work_buffer(2:) = height / num_procs
     end if
+
+    GNUM_PROCS = num_procs
 
 end subroutine calculate_workload
 
@@ -481,6 +486,67 @@ subroutine print_grid(in_grid, alive_char, dead_char, pid, include_ghosts)
     write(*, *)
 
 end subroutine print_grid
+
+subroutine global_print_grid(pid, in_grid, &
+                             global_nrows, global_ncols, alive_char, dead_char)
+        implicit none
+        logical, target :: in_grid(:, :)
+        logical, dimension(:), allocatable, target :: global_grid_buff(:)
+        logical, pointer :: temp_buff(:, :)
+        integer :: i, j, r_start, r_end, c_start, c_end, local_nrows, local_ncols, global_nrows, global_ncols, pid
+        integer, dimension(2) :: shape_buffer
+        INTEGER, DIMENSION(:), ALLOCATABLE :: recvcounts(:), dipls(:)
+        character :: alive_char, dead_char
+        integer :: status(mpi_status_size), ierr
+    
+
+        ! Get size of local processor's data.
+        local_nrows = size(in_grid, 1)
+        local_ncols = size(in_grid, 2)
+
+        ! Set up gatherv buffer that maps number of counts to recv for each pid.
+        ALLOCATE(recvcounts(GNUM_PROCS))
+        ALLOCATE(dipls(GNUM_PROCS))
+
+        do i = 1, GNUM_PROCS
+            recvcounts(i) = (local_ncols) * (local_nrows)  ! pid is zero-based so add 1.
+            dipls(i) = (i - 1) * (local_nrows) * (local_ncols-2)
+        end do
+
+        if (pid .eq. 0) then
+            ! Master allocate grid to print. NO GHOST CELLS
+            ALLOCATE(global_grid_buff(global_nrows * global_ncols))
+        end if
+
+        call MPI_Gatherv(in_grid, local_nrows * local_ncols, mpi_logical, &
+                         global_grid_buff, recvcounts, dipls, mpi_logical, 0, mpi_comm_world, ierr)
+        DEALLOCATE(recvcounts)
+        DEALLOCATE(dipls)
+        ! Printing information: show ghost cells or not.
+    
+       if (pid .eq. 0) then
+            shape_buffer(1) = global_nrows
+            shape_buffer(2) = global_ncols
+            call C_F_POINTER (C_LOC(global_grid_buff), temp_buff, shape_buffer)
+
+            do i = 2, global_nrows-1
+                do j = 2, global_ncols-1
+                    if (temp_buff(i, j) .eqv. .true.) then
+                        write(*, "(A)", advance = "NO") alive_char
+                    else
+                        write(*, "(A)", advance = "NO") dead_char
+                    end if
+                end do 
+                write(*, *)
+            end do
+            write(*, *)
+
+            DEALLOCATE(global_grid_buff)
+       end if
+
+       call mpi_barrier(mpi_comm_world, ierr)
+
+end subroutine global_print_grid
 
 
 subroutine clear_screen()
